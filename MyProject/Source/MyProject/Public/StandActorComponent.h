@@ -4,8 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Components/TimelineComponent.h"
 #include "StandActorComponent.generated.h"
 
+class UCurveFloat;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class MYPROJECT_API UStandActorComponent : public UActorComponent
@@ -16,13 +18,34 @@ public:
 	// Sets default values for this component's properties
 	UStandActorComponent();
 
+
+	UFUNCTION()
+		void TimelineProgress(float val);
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
+
+	FTimeline curveTimeline;
+	UPROPERTY(EditAnywhere, Category = "Timeline");
+	UCurveFloat* curveFloat;
+
+	UPROPERTY();
+	FVector startPos;
+	UPROPERTY();
+	FVector endPos;
+
+	//Since this is a component, to get actor pos we
+
+	UPROPERTY(EditAnywhere, Category = "Timeline")
+	float ZOffset;
 
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+
+private:
+	AActor* owner = nullptr;
 		
 };

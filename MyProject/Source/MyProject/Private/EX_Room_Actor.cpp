@@ -12,36 +12,22 @@ AEX_Room_Actor::AEX_Room_Actor()
 }
 
 //This function is my first ever test of spawning objects from a C++ clas in UE 
-void AEX_Room_Actor::SpawnStands()
+void AEX_Room_Actor::SpawnStands(unsigned int ammount)
 {
-	UWorld* world = GetWorld();
-	if (world)
-	{
-		if (StandBP != nullptr)
-		{
-			FVector pos_offset = FVector(0, 300, 0);
-			FVector spawn_pos = FVector(0, 0, 0);
+	stands = ammount;
+	finished_spawns = false;
+}
 
-			for (int i = 0; i < 10; ++i)
-			{
-				//Prepeare spawn data
-				FActorSpawnParameters params;
-				params.Owner = this;
-
-				FRotator rot;
-				//Spawn Stands Here
-				world->SpawnActor<AActor>(StandBP, spawn_pos, rot, params);
-				spawn_pos += pos_offset;
-			}
-		}
-	}
+inline float AEX_Room_Actor::TimeToSpawn()
+{
+	return total_sp_time / stands;
 }
 
 // Called when the game starts or when spawned
 void AEX_Room_Actor::BeginPlay()
 {
 	Super::BeginPlay();
-	SpawnStands();
+	SpawnStands(10);
 }
 
 // Called every frame
@@ -49,5 +35,35 @@ void AEX_Room_Actor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (finished_spawns == false)
+	{
+		//Spawn Items over time
+		if (sp_time >= TimeToSpawn())
+		{
+			UWorld* world = GetWorld();
+			if (world)
+			{
+				if (StandBP != nullptr)
+				{
+					FVector spawn_pos = FVector(0, 300.0f *sp_stands, 0);
+
+					//Prepeare spawn data
+					FActorSpawnParameters params;
+					params.Owner = this;
+
+					FRotator rot = FRotator(0.0f);
+					//Spawn Stands Here
+					world->SpawnActor<AActor>(StandBP, spawn_pos, rot, params);
+				}
+			}
+			sp_time = 0.0f;
+			sp_stands++;
+			if (sp_stands >= stands)
+			{
+				finished_spawns = true;
+			}
+		}
+		sp_time += DeltaTime;
+	}
 }
 

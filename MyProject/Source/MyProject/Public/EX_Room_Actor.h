@@ -14,7 +14,8 @@ class MYPROJECT_API AEX_Room_Actor : public AActor
 public:	
 	// Sets default values for this actor's properties
 	AEX_Room_Actor();
-	void SpawnStands();
+	void SpawnStands(unsigned int ammount);
+	inline float TimeToSpawn();
 	
 
 	UPROPERTY(EditAnywhere);
@@ -23,6 +24,12 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	unsigned int stands = 0;
+	unsigned int sp_stands = 0; //Spawned stands
+	bool finished_spawns = true;
+	float total_sp_time = 2.0f;
+	float sp_time = 0.0f;
 
 public:	
 	// Called every frame
