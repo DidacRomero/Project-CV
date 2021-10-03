@@ -3,28 +3,26 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
+#include "GameFramework/Actor.h"
 #include "Components/TimelineComponent.h"
-#include "StandActorComponent.generated.h"
+#include "EX_Stand.generated.h"
 
-class UCurveFloat;
-
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class MYPROJECT_API UStandActorComponent : public UActorComponent
+UCLASS()
+class MYPROJECT_API AEX_Stand : public AActor
 {
 	GENERATED_BODY()
-
+	
 public:	
-	// Sets default values for this component's properties
-	UStandActorComponent();
+	// Sets default values for this actor's properties
+	AEX_Stand();
+
 	void StartAnim();
 
 
 	UFUNCTION()
 		void TimelineProgress(float val);
-
 protected:
-	// Called when the game starts
+	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	FTimeline curveTimeline;
@@ -39,14 +37,11 @@ protected:
 	//Since this is a component, to get actor pos we
 
 	UPROPERTY(EditAnywhere, Category = "Timeline")
-	float ZOffset;
+		float ZOffset;
 
 public:	
 	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void Tick(float DeltaTime) override;
 
-
-private:
-	AActor* owner = nullptr;
-		
+	//virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 };

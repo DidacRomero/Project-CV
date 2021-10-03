@@ -2,7 +2,8 @@
 
 
 #include "EX_Room_Actor.h"
-
+#include "StandActorComponent.h"
+#include "EX_Stand.h"
 // Sets default values
 AEX_Room_Actor::AEX_Room_Actor()
 {
@@ -53,7 +54,20 @@ void AEX_Room_Actor::Tick(float DeltaTime)
 
 					FRotator rot = FRotator(0.0f);
 					//Spawn Stands Here
-					world->SpawnActor<AActor>(StandBP, spawn_pos, rot, params);
+					AActor* st = world->SpawnActor<AActor>(StandBP, spawn_pos, rot, params);
+					AEX_Stand* bp = (AEX_Stand*)st;
+					bp->StartAnim();
+
+					
+					//TSubclassOf<UStandActorComponent> comp;
+					//st->GetComponentByClass(comp);
+					//
+					////For some reason this crashes, probably comp is null but It literally can't be debuged so I don't know whatr i need to change to debug correctly
+					//if(comp !=nullptr)
+					//UStandActorComponent* c = comp->GetDefaultObject<UStandActorComponent>(); //For some reason you can't find the component if it was added through the Add component tab
+					//
+					/*if (c)
+						c->StartAnim();*/
 				}
 			}
 			sp_time = 0.0f;

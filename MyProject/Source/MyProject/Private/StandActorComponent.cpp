@@ -1,8 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
-#include "Components/TimelineComponent.h"
 #include "StandActorComponent.h"
+#include "Components/TimelineComponent.h"
 
 // Sets default values for this component's properties
 UStandActorComponent::UStandActorComponent()
@@ -14,6 +13,27 @@ UStandActorComponent::UStandActorComponent()
 	// ...
 }
 
+
+void UStandActorComponent::StartAnim()
+{
+	//Get the actor in which we're a component
+	owner = this->GetOwner();
+
+	// ...
+	if (curveFloat)
+	{
+		FOnTimelineFloat TimelineProgress;
+		TimelineProgress.BindUFunction(this, FName("TimelineProgress"));
+		curveTimeline.AddInterpFloat(curveFloat, TimelineProgress);
+		curveTimeline.SetLooping(true);
+
+		if (owner != nullptr)
+			startPos = endPos = owner->GetActorLocation(); //This code can only run on AActor inherited c++ classes,, so I need to rewfactor the code
+		endPos.Z += ZOffset;
+
+		curveTimeline.PlayFromStart();
+	}
+}
 
 void UStandActorComponent::TimelineProgress(float val)
 {
@@ -27,23 +47,7 @@ void UStandActorComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//Get the actor in which we're a component
-	owner = this->GetOwner();
-
-	// ...
-	if (curveFloat)
-	{
-		FOnTimelineFloat TimelineProgress;
-		TimelineProgress.BindUFunction(this, FName("TimelineProgress"));
-		curveTimeline.AddInterpFloat(curveFloat, TimelineProgress);
-		curveTimeline.SetLooping(true);
-
-		if(owner != nullptr)
-		startPos = endPos = owner->GetActorLocation(); //This code can only run on AActor inherited c++ classes,, so I need to rewfactor the code
-		endPos.Z += ZOffset;
-
-		curveTimeline.PlayFromStart();
-	}
+	
 }
 
 
