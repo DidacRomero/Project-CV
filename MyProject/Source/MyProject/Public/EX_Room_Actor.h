@@ -28,11 +28,17 @@ protected:
 	unsigned int stands = 0;
 	unsigned int sp_stands = 0; //Spawned stands
 	bool finished_spawns = true;
-	float total_sp_time = 2.0f;
+	float total_sp_time = 1.0f;
 	float sp_time = 0.0f;
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+
+private:
+	float c_radius = 700.0f;
+	float spacing_angle = 0.0f;
+
+	FVector PosInCircle(int id);
 };

@@ -3,7 +3,10 @@
 
 #include "EX_Room_Actor.h"
 #include "StandActorComponent.h"
+#include "GenericPlatform/GenericPlatformMath.h" 
+#include "Kismet/KismetMathLibrary.h"
 #include "EX_Stand.h"
+
 // Sets default values
 AEX_Room_Actor::AEX_Room_Actor()
 {
@@ -28,7 +31,7 @@ inline float AEX_Room_Actor::TimeToSpawn()
 void AEX_Room_Actor::BeginPlay()
 {
 	Super::BeginPlay();
-	SpawnStands(10);
+	SpawnStands(15);
 }
 
 // Called every frame
@@ -46,28 +49,18 @@ void AEX_Room_Actor::Tick(float DeltaTime)
 			{
 				if (StandBP != nullptr)
 				{
-					FVector spawn_pos = FVector(0, 300.0f *sp_stands, 0);
+					//FVector spawn_pos = FVector(0, 300.0f *sp_stands, 0);
+					FVector spawn_pos = PosInCircle(sp_stands);
 
 					//Prepeare spawn data
 					FActorSpawnParameters params;
 					params.Owner = this;
 
-					FRotator rot = FRotator(0.0f);
+					FRotator rot = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), spawn_pos);
 					//Spawn Stands Here
 					AActor* st = world->SpawnActor<AActor>(StandBP, spawn_pos, rot, params);
 					AEX_Stand* bp = (AEX_Stand*)st;
 					bp->StartAnim();
-
-					
-					//TSubclassOf<UStandActorComponent> comp;
-					//st->GetComponentByClass(comp);
-					//
-					////For some reason this crashes, probably comp is null but It literally can't be debuged so I don't know whatr i need to change to debug correctly
-					//if(comp !=nullptr)
-					//UStandActorComponent* c = comp->GetDefaultObject<UStandActorComponent>(); //For some reason you can't find the component if it was added through the Add component tab
-					//
-					/*if (c)
-						c->StartAnim();*/
 				}
 			}
 			sp_time = 0.0f;
@@ -79,5 +72,21 @@ void AEX_Room_Actor::Tick(float DeltaTime)
 		}
 		sp_time += DeltaTime;
 	}
+}
+
+//Given an index number of an array of numbers, calculate the position of that index so we have equidistant points on a circle of n indexes
+FVector AEX_Room_Actor::PosInCircle(int id)
+{
+	FVector center = GetActorLocation();
+	//Calculate the DEG angle distance between indexes. and its QuadrantTODO use a different method with arrays & array size, less hardcoded
+	spacing_angle = 2*PI / stands;
+	const float total_angle = spacing_angle * id; //Total angle of the circle
+
+	//Calculate X & Y offset from the center, using basic trigonometry
+	float y_offset = FGenericPlatformMath::Sin(total_angle);
+	float x_offset = FGenericPlatformMath::Cos(total_angle);
+	FVector v = FVector(x_offset, y_offset, 0.0f) * c_radius; // direction * displacement
+
+	return center + v;
 }
 
